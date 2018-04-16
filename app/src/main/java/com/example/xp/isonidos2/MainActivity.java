@@ -1,5 +1,6 @@
 package com.example.xp.isonidos2;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -45,40 +46,51 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void sonido(View view){
-//        Log.i("etiqueta: ", findViewById(view.getId()).getTag().toString());
-//        Button b = (Button) findViewById(view.getId());
-//        MediaPlayer m = new MediaPlayer();
-//        m = MediaPlayer.create(this, (int)findViewById(view.getId()).getTag());
-//        m.start();
-//        m.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            @Override
-//            public void onCompletion(MediaPlayer mediaPlayer) {
-//                mediaPlayer.stop();
-//                if (mediaPlayer != null) {
-//                    mediaPlayer.release();
-//                }
+    public void sonidoCopiar(View view){
+        Button b = (Button) findViewById(view.getId());
+        String nombre = b.getText().toString();
+        /**
+         * Show share dialog BOTH image and text
+         */
+//        Uri imageUri = Uri.parse("android.resource://"+getPackageName()+"/"+view.getTag());
+//        //Uri imageUri = Uri.parse(pictureFile.getAbsolutePath());
+//        Intent shareIntent = new Intent();
+//        shareIntent.setAction(Intent.ACTION_SEND);
+//        //Target whatsapp:
+//        shareIntent.setPackage("com.whatsapp");
+//        //Add text and then Image URI
+//        shareIntent.putExtra(Intent.EXTRA_TEXT, nombre+".mp3");
+//        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+//        shareIntent.setType("audio/mp3");
+//        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 //
-//            }
-//        });
+//        try {
+//            startActivity(shareIntent);
+//        } catch (android.content.ActivityNotFoundException ex) {
+//           // ToastHelper.MakeShortText("Whatsapp have not been installed.");
+//
+//        }
 
+
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("audio/*");
+        Uri uri = Uri.parse("android.resource://"+getPackageName()+"/raw/"+nombre+".mp3");
+        Log.i("nombre: ", uri.toString());
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
+
+    }
+
+    public void sonido(View view){
         //Log.i("etiqueta: ", findViewById(view.getId()).getTag().toString());
         Button b = (Button) findViewById(view.getId());
         String nombre = b.getText().toString();
-        Log.i("etiqueta: ", nombre.substring(0,1));
         if (nombre.substring(0,2).contains("v_")) {
             VideoView videoview = (VideoView) findViewById(R.id.videoView);
             Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+view.getTag());
             videoview.setVideoURI(uri);
             videoview.start();
-//            videoview.setOnCompletionListener(new );
-//            @Override
-//            public void onCompletion(VideoView videoview) {
-//                videoview.stop();
-//                if (mediaPlayer != null) {
-//                    mediaPlayer.release();
-//                }
-//            }
         } else {
             MediaPlayer m = new MediaPlayer();
             m = MediaPlayer.create(this, (int) findViewById(view.getId()).getTag());
@@ -126,6 +138,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 sonido(view);
+            }
+        });
+
+        b.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                sonidoCopiar(v);
+                return true;
             }
         });
         return b;
