@@ -2,11 +2,14 @@ package com.example.xp.isonidos2;
 
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.VideoView;
@@ -23,13 +26,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         LinearLayout principal =  (LinearLayout) findViewById(R.id.botones);
-
-        //añado el view del video
-
-//        VideoView v = new VideoView(this);
-//        v.setId(333+1);
-//        v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,255));
-//        principal.addView(v);
 
         int numeroLinea = 0;
         LinearLayout auxiliar = creaLineaBotones(numeroLinea);
@@ -50,21 +46,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sonido(View view){
-        Log.i("etiqueta: ", findViewById(view.getId()).getTag().toString());
-        Button b = (Button) findViewById(view.getId());
-        MediaPlayer m = new MediaPlayer();
-        m = MediaPlayer.create(this, (int)findViewById(view.getId()).getTag());
-        m.start();
-        m.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayer.stop();
-                if (mediaPlayer != null) {
-                    mediaPlayer.release();
-                }
+//        Log.i("etiqueta: ", findViewById(view.getId()).getTag().toString());
+//        Button b = (Button) findViewById(view.getId());
+//        MediaPlayer m = new MediaPlayer();
+//        m = MediaPlayer.create(this, (int)findViewById(view.getId()).getTag());
+//        m.start();
+//        m.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            @Override
+//            public void onCompletion(MediaPlayer mediaPlayer) {
+//                mediaPlayer.stop();
+//                if (mediaPlayer != null) {
+//                    mediaPlayer.release();
+//                }
+//
+//            }
+//        });
 
-            }
-        });
+        //Log.i("etiqueta: ", findViewById(view.getId()).getTag().toString());
+        Button b = (Button) findViewById(view.getId());
+        String nombre = b.getText().toString();
+        Log.i("etiqueta: ", nombre.substring(0,1));
+        if (nombre.substring(0,2).contains("v_")) {
+            VideoView videoview = (VideoView) findViewById(R.id.videoView);
+            Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+view.getTag());
+            videoview.setVideoURI(uri);
+            videoview.start();
+//            videoview.setOnCompletionListener(new );
+//            @Override
+//            public void onCompletion(VideoView videoview) {
+//                videoview.stop();
+//                if (mediaPlayer != null) {
+//                    mediaPlayer.release();
+//                }
+//            }
+        } else {
+            MediaPlayer m = new MediaPlayer();
+            m = MediaPlayer.create(this, (int) findViewById(view.getId()).getTag());
+            m.start();
+            m.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mediaPlayer.stop();
+                    if (mediaPlayer != null) {
+                        mediaPlayer.release();
+                    }
+                }
+            });
+        }
     }
 
     private LinearLayout creaLineaBotones(int numeroLinea){
