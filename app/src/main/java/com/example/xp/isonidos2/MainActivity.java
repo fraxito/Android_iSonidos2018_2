@@ -1,20 +1,22 @@
 package com.example.xp.isonidos2;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.content.FileProvider;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.VideoView;
 
+import java.io.File;
 import java.lang.reflect.Field;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,38 +51,25 @@ public class MainActivity extends AppCompatActivity {
     public void sonidoCopiar(View view){
         Button b = (Button) findViewById(view.getId());
         String nombre = b.getText().toString();
-        /**
-         * Show share dialog BOTH image and text
-         */
-//        Uri imageUri = Uri.parse("android.resource://"+getPackageName()+"/"+view.getTag());
-//        //Uri imageUri = Uri.parse(pictureFile.getAbsolutePath());
-//        Intent shareIntent = new Intent();
-//        shareIntent.setAction(Intent.ACTION_SEND);
-//        //Target whatsapp:
-//        shareIntent.setPackage("com.whatsapp");
-//        //Add text and then Image URI
-//        shareIntent.putExtra(Intent.EXTRA_TEXT, nombre+".mp3");
-//        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-//        shareIntent.setType("audio/mp3");
-//        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//
-//        try {
-//            startActivity(shareIntent);
-//        } catch (android.content.ActivityNotFoundException ex) {
-//           // ToastHelper.MakeShortText("Whatsapp have not been installed.");
-//
-//        }
 
 
-        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-        sharingIntent.setType("audio/*");
-        Uri uri = Uri.parse("android.resource://"+getPackageName()+"/raw/"+nombre+".mp3");
-        Log.i("nombre: ", uri.toString());
-        sharingIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+        String sharePath = "android.resource://"+getPackageName()+"/raw/"+nombre+".mp3";
+        Uri uri = getRawUri(nombre+".mp3");
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        share.setType("audio/*");
+        share.putExtra(Intent.EXTRA_STREAM, uri);
+        startActivity(Intent.createChooser(share, "Share Sound File"));
 
 
+        // https://stackoverflow.com/questions/12170386/create-and-share-a-file-from-internal-storage
     }
+
+    public Uri getRawUri(String filename) {
+        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + File.pathSeparator + File.separator + getPackageName() + "/raw/" + filename);
+    }
+
 
     public void sonido(View view){
         //Log.i("etiqueta: ", findViewById(view.getId()).getTag().toString());
