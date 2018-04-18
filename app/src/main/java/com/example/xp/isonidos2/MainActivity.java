@@ -1,12 +1,14 @@
 package com.example.xp.isonidos2;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,10 +16,16 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+
+import static android.support.v4.content.FileProvider.getUriForFile;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,24 +54,65 @@ public class MainActivity extends AppCompatActivity {
                 principal.addView(auxiliar);
             }
         }
+
+
     }
+
 
     public void sonidoCopiar(View view){
         Button b = (Button) findViewById(view.getId());
         String nombre = b.getText().toString();
 
 
-        String sharePath = "android.resource://"+getPackageName()+"/raw/"+nombre+".mp3";
-        Uri uri = getRawUri(nombre+".mp3");
-        Intent share = new Intent(Intent.ACTION_SEND);
-        share.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        share.setType("audio/*");
-        share.putExtra(Intent.EXTRA_STREAM, uri);
-        startActivity(Intent.createChooser(share, "Share Sound File"));
+        File rutaSonido = new File(getFilesDir(), "raw");
+        rutaSonido.mkdirs();
+        File file = new File(rutaSonido, nombre+".mp3");
+
+        Uri uri = FileProvider.getUriForFile(this,"com.example.xp.isonidos2", file);
+
+        Toast.makeText(this, file.toString(), Toast.LENGTH_LONG).show();
+        //***
 
 
-        // https://stackoverflow.com/questions/12170386/create-and-share-a-file-from-internal-storage
+
+
+
+
+
+
+
+
+
+//        Intent intent = ShareCompat.IntentBuilder.from(this)
+//                .setStream(uri) // uri from FileProvider
+//                .setType("audio/*")
+//                .getIntent()
+//                .setAction(Intent.ACTION_SEND) //Change if needed
+//                .setDataAndType(uri, "audio/*")
+//                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//
+//        startActivity(intent);
+
+
+
+//        Intent share = new Intent(Intent.ACTION_SEND);
+//        share.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        share.setType("audio/mpeg");
+//        share.putExtra(Intent.EXTRA_STREAM, uri);
+//        share.putExtra(Intent.EXTRA_SUBJECT, uri.toString());
+//        startActivity(Intent.createChooser(share, "Share Sound File"));
+
+//        Intent mShareIntent = new Intent();
+//        mShareIntent.setAction(Intent.ACTION_SEND);
+//        mShareIntent.setType("audio/mpeg");
+//        // Assuming it may go via eMail:
+//        mShareIntent.putExtra(Intent.EXTRA_SUBJECT, "Here is a PDF from PdfSend");
+//        // Attach the PDf as a Uri, since Android can't take it as bytes yet.
+//        mShareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+//        startActivity(mShareIntent);
+
+
     }
 
     public Uri getRawUri(String filename) {
