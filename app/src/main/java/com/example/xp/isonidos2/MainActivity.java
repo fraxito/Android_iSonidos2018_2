@@ -77,22 +77,19 @@ public class MainActivity extends AppCompatActivity {
 
         Uri uri = FileProvider.getUriForFile(this,"com.example.xp.isonidos2", file);
         Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
-        Log.i("nombre", uri.toString());
+        Log.i("nombre", getContentResolver().getType(uri));
         //***
 
 
 
-//        Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
-//        intent.setData(pdfURI);
-//        intent.setType("application/pdf");
-//        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//        activity.startActivity(intent);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        shareIntent.setDataAndType(
+                uri,
+                "audio/mpeg");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        startActivity(Intent.createChooser(shareIntent, "Share Sound File"));
 
-//        final String auth = "com.example.xp.isonidos2";
-//        final Uri uri = FileProvider.getUriForFile(this, auth, file);
-//        final String type = this.getContentResolver().getType(uri);
-//
-//        final Intent shareIntent = new Intent(Intent.ACTION_SEND);
 //        shareIntent.setDataAndType(uri, type);
 //        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
 //        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
