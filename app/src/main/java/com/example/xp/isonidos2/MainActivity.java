@@ -1,8 +1,10 @@
 package com.example.xp.isonidos2;
 
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -64,60 +66,56 @@ public class MainActivity extends AppCompatActivity {
         String nombre = b.getText().toString();
 
 
-        File rutaSonido = new File(getFilesDir(), "raw");
-        rutaSonido.mkdirs();
-        File file = new File(rutaSonido, nombre+".mp3");
+//        File rutaSonido = new File(getFilesDir(), "raw");
+//        rutaSonido.mkdirs();
+//        File file = new File(rutaSonido, nombre+".mp3");
+
+        File file=new File(this.getFilesDir(),"raw/" + nombre+".mp3");
+
+//        String url = "content://com.example.xp.isonidos2/raw/"+ nombre+".mp3";
+//        File file = new File(url);
 
         Uri uri = FileProvider.getUriForFile(this,"com.example.xp.isonidos2", file);
-
-        Toast.makeText(this, file.toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
+        Log.i("nombre", uri.toString());
         //***
 
 
 
+//        Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
+//        intent.setData(pdfURI);
+//        intent.setType("application/pdf");
+//        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        activity.startActivity(intent);
 
-
-
-
-
-
-
-
-//        Intent intent = ShareCompat.IntentBuilder.from(this)
-//                .setStream(uri) // uri from FileProvider
-//                .setType("audio/*")
-//                .getIntent()
-//                .setAction(Intent.ACTION_SEND) //Change if needed
-//                .setDataAndType(uri, "audio/*")
-//                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        final String auth = "com.example.xp.isonidos2";
+//        final Uri uri = FileProvider.getUriForFile(this, auth, file);
+//        final String type = this.getContentResolver().getType(uri);
 //
-//        startActivity(intent);
+//        final Intent shareIntent = new Intent(Intent.ACTION_SEND);
+//        shareIntent.setDataAndType(uri, type);
+//        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+//        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        final Intent chooser = Intent.createChooser(shareIntent, "<titulo>");
+//        this.startActivity(chooser);
 
 
 
+
+
+//
+//        this.grantUriPermission("com.whatsapp", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//
 //        Intent share = new Intent(Intent.ACTION_SEND);
-//        share.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//        share.setType("audio/mpeg");
+//        share.setType("audio/*");
 //        share.putExtra(Intent.EXTRA_STREAM, uri);
-//        share.putExtra(Intent.EXTRA_SUBJECT, uri.toString());
 //        startActivity(Intent.createChooser(share, "Share Sound File"));
 
-//        Intent mShareIntent = new Intent();
-//        mShareIntent.setAction(Intent.ACTION_SEND);
-//        mShareIntent.setType("audio/mpeg");
-//        // Assuming it may go via eMail:
-//        mShareIntent.putExtra(Intent.EXTRA_SUBJECT, "Here is a PDF from PdfSend");
-//        // Attach the PDf as a Uri, since Android can't take it as bytes yet.
-//        mShareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-//        startActivity(mShareIntent);
 
 
     }
 
-    public Uri getRawUri(String filename) {
-        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + File.pathSeparator + File.separator + getPackageName() + "/raw/" + filename);
-    }
+
 
 
     public void sonido(View view){
