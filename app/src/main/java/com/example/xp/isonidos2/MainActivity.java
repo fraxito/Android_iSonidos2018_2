@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -23,9 +24,12 @@ import android.widget.VideoView;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.util.List;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
 
@@ -60,56 +64,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private static final String SHARED_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".myfileprovider";
+    private static final String SHARED_FOLDER = "shared";
 
-    public void sonidoCopiar(View view){
+    public void sonidoCopiar(View view) throws IOException{
         Button b = (Button) findViewById(view.getId());
         String nombre = b.getText().toString();
+        String extension = ".mp3";
+        String tipo = "audio/mpeg";
+        if (nombre.substring(0,2).contains("v_")) {
+            extension = ".mp4";
+            tipo = "video/mp4";
+        }
+        InputStream ins = getResources().openRawResource(
+                getResources().getIdentifier(nombre,
+                        "raw", getPackageName()));
 
+        final File sharedFolder = new File(getFilesDir(), SHARED_FOLDER);
+        sharedFolder.mkdirs();
 
-//        File rutaSonido = new File(getFilesDir(), "raw");
-//        rutaSonido.mkdirs();
-//        File file = new File(rutaSonido, nombre+".mp3");
+        final File sharedFile = File.createTempFile(nombre,extension , sharedFolder);
+        sharedFile.createNewFile();
 
-        File file=new File(this.getFilesDir(),"raw/" + nombre+".mp3");
-
-//        String url = "content://com.example.xp.isonidos2/raw/"+ nombre+".mp3";
-//        File file = new File(url);
-
-        Uri uri = FileProvider.getUriForFile(this,"com.example.xp.isonidos2", file);
-        Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
-        Log.i("nombre", getContentResolver().getType(uri));
-        //***
-
-
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        shareIntent.setDataAndType(
-                uri,
-                "audio/mpeg");
-        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        startActivity(Intent.createChooser(shareIntent, "Share Sound File"));
-
-//        shareIntent.setDataAndType(uri, type);
-//        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-//        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//        final Intent chooser = Intent.createChooser(shareIntent, "<titulo>");
-//        this.startActivity(chooser);
-
-
-
-
-
-//
-//        this.grantUriPermission("com.whatsapp", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//
-//        Intent share = new Intent(Intent.ACTION_SEND);
-//        share.setType("audio/*");
-//        share.putExtra(Intent.EXTRA_STREAM, uri);
-//        startActivity(Intent.createChooser(share, "Share Sound File"));
-
-
-
+        copyInputStreamToFile (ins, sharedFile);
+        final Uri uri = FileProvider.getUriForFile(this, SHARED_PROVIDER_AUTHORITY, sharedFile);
+        final ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this)
+                .setType(tipo)
+                .addStream(uri);
+        final Intent chooserIntent = intentBuilder.createChooserIntent();
+        startActivity(chooserIntent);
     }
 
 
@@ -177,10 +160,42 @@ public class MainActivity extends AppCompatActivity {
         b.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                sonidoCopiar(v);
+                try {
+                    sonidoCopiar(v);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return true;
             }
         });
         return b;
+    }
+
+    // Copy an InputStream to a File.
+    private void copyInputStreamToFile(InputStream in, File file) {
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while((len=in.read(buf))>0){
+                out.write(buf,0,len);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            // Ensure that the InputStreams are closed even if there's an exception.
+            try {
+                if ( out != null ) {
+                    out.close();
+                }
+                in.close();
+            }
+            catch ( IOException e ) {
+                e.printStackTrace();
+            }
+        }
     }
 }
