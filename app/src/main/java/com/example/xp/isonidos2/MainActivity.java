@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         LinearLayout principal =  (LinearLayout) findViewById(R.id.botones);
+
+        Snackbar.make(this.findViewById(android.R.id.content), "deja pulsado un botón para compartir", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
 
         int numeroLinea = 0;
         LinearLayout auxiliar = creaLineaBotones(numeroLinea);
