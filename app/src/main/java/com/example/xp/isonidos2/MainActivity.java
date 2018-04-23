@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,6 +21,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -30,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
@@ -37,6 +40,7 @@ import static android.support.v4.content.FileProvider.getUriForFile;
 public class MainActivity extends AppCompatActivity {
 
 
+    HashMap<String, String> listaSonidos=new HashMap<String, String>();
 
 
     @Override
@@ -45,8 +49,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         LinearLayout principal =  (LinearLayout) findViewById(R.id.botones);
 
-        Snackbar.make(this.findViewById(android.R.id.content), "deja pulsado un botón para compartir", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+
+        Snackbar snack = Snackbar.make(this.findViewById(android.R.id.content),"", Snackbar.LENGTH_LONG);
+        View view = snack.getView();
+        TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+        tv.setMaxLines(2);
+        tv.setGravity(Gravity.CENTER);
+        tv.setText("Deja pulsado un botón para compartir.Haz Scroll hacia abajo para ver más sonidos");
+        snack.show();
 
         int numeroLinea = 0;
         LinearLayout auxiliar = creaLineaBotones(numeroLinea);
@@ -63,9 +73,15 @@ public class MainActivity extends AppCompatActivity {
                 auxiliar = creaLineaBotones(i);
                 principal.addView(auxiliar);
             }
+            listaSonidos.put(b.getTag().toString(), b.getText().toString());
+            b.setText(acortaEtiquetaBoton((b.getText().toString())));
         }
+    }
 
-
+    private String acortaEtiquetaBoton(String s){
+        if (s.contains("_")) {s = s.substring(s.indexOf('_'));}
+        s = s.replace('_',' ');
+        return s;
     }
 
     private static final String SHARED_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".myfileprovider";
@@ -73,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void sonidoCopiar(View view) throws IOException{
         Button b = (Button) findViewById(view.getId());
-        String nombre = b.getText().toString();
+        String nombre = listaSonidos.get(view.getTag().toString());
         String extension = ".mp3";
         String tipo = "audio/mpeg";
         if (nombre.substring(0,2).contains("v_")) {
@@ -99,13 +115,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(chooserIntent);
     }
 
-
-
-
     public void sonido(View view){
-        //Log.i("etiqueta: ", findViewById(view.getId()).getTag().toString());
         Button b = (Button) findViewById(view.getId());
-        String nombre = b.getText().toString();
+        String nombre = listaSonidos.get(view.getTag().toString());
         if (nombre.substring(0,2).contains("v_")) {
             VideoView videoview = (VideoView) findViewById(R.id.videoView);
             Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+view.getTag());
@@ -148,11 +160,11 @@ public class MainActivity extends AppCompatActivity {
         b.setLayoutParams(parametrosBotones);
         b.setText(_listaCanciones[i].getName());
         b.setTextColor(Color.WHITE);
+        b.setTextSize(10);
         b.setBackgroundColor(Color.BLUE);
-        b.setAllCaps(false); //todas las letras del botón en minúscula
+        b.setAllCaps(true); //todas las letras del botón en minúscula
         int id = this.getResources().getIdentifier(_listaCanciones[i].getName(), "raw", this.getPackageName());
         b.setTag(id);
-
         b.setId(i+50);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
