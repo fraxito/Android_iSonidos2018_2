@@ -79,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String acortaEtiquetaBoton(String s){
+        if (s.substring(0,2).contains("v_")) {
+            s = s.substring(s.indexOf('_')+1);
+        }
         if (s.contains("_")) {s = s.substring(s.indexOf('_'));}
         s = s.replace('_',' ');
         return s;
@@ -162,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         b.setTextColor(Color.WHITE);
         b.setTextSize(10);
         b.setBackgroundColor(Color.BLUE);
-        b.setAllCaps(true); //todas las letras del botón en minúscula
+        b.setAllCaps(true); //todas las letras del botón en mayúscula/minúscula
         int id = this.getResources().getIdentifier(_listaCanciones[i].getName(), "raw", this.getPackageName());
         String nombreLargo =  _listaCanciones[i].getName();
 
