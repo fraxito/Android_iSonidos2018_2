@@ -1,4 +1,4 @@
-package com.example.xp.isonidos2;
+package com.cetys.xp.isonidos2;
 
 import org.junit.Test;
 

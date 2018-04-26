@@ -1,4 +1,4 @@
-package com.example.xp.isonidos2;
+package com.cetys.xp.isonidos2;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

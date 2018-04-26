@@ -1,4 +1,4 @@
-package com.example.xp.isonidos2;
+package com.cetys.xp.isonidos2;
 
 import android.content.ClipData;
 import android.content.ContentResolver;
